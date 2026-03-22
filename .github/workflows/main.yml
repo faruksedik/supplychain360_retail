@@ -1,0 +1,71 @@
+name: SupplyChain360-CI-CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # --- STAGE 1: SNOWFLAKE VALIDATION (CI) ---
+  snowflake-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dbt
+        run: pip install dbt-snowflake
+
+      - name: Create Global dbt Profile
+        run: |
+          # 1. Create the hidden directory in the runner's home
+          mkdir -p ~/.dbt
+          # 2. Write your dev profile into that hidden directory
+          cat <<EOF > ~/.dbt/profiles.yml
+          supplychain360:
+            target: dev
+            outputs:
+              dev:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: ACCOUNTADMIN
+                database: SUPPLYCHAIN360_DB
+                warehouse: COMPUTE_WH
+                schema: RAW
+                threads: 1
+          EOF
+
+      - name: dbt Build & Test
+        # 3. Walk into your nested project folder
+        working-directory: ./dbt/supplychain360
+        run: |
+          dbt deps
+          dbt debug --target dev
+          dbt compile --target dev
+
+  # --- STAGE 2: DOCKER BUILD & PUSH (CD) ---
+  docker-deploy:
+    needs: snowflake-validation # Only runs if Stage 1 is perfect
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/supplychain360:v1
