@@ -1,0 +1,64 @@
+# =========================
+# ENV & SECRETS (CRITICAL)
+# =========================
+.env
+*.env
+
+# dbt profiles (contains credentials)
+profiles.yml
+**/profiles.yml
+
+# AWS credentials
+.aws/
+**/.aws/
+
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+venv/
+.env/
+
+# =========================
+# GIT
+# =========================
+.git
+.gitignore
+
+# =========================
+# AIRFLOW
+# =========================
+logs/
+*/logs/
+
+# =========================
+# DBT ARTIFACTS
+# =========================
+target/
+dbt_packages/
+logs/
+
+# =========================
+# TERRAFORM (optional)
+# =========================
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# =========================
+# OS FILES
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Google Credentials
+# =========================
+google_service_account.json

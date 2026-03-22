@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: mart_regional_sales_performance
+    description: >
+      Executive-level view of monthly sales performance. 
+      Used to track regional demand, category growth, and discount efficiency.
+    columns:
+      - name: sales_month
+        description: "The first day of the month for the sales period."
+      - name: store_region
+        description: "The high-level geographic region (e.g., NORTH, SOUTH)."
+      - name: net_revenue_usd
+        description: "Total revenue after discounts, used for tax and profit reporting."
+      - name: avg_order_value_usd
+        description: "Average amount spent per transaction."
+
+  - name: mart_supply_chain_efficiency
+    description: >
+      Logistics performance mart used to track Supplier and Warehouse reliability.
+      Calculates the On-Time Delivery Rate (OTDR).
+    columns:
+      - name: on_time_delivery_rate_pct
+        description: "The percentage of shipments that arrived exactly on the expected date."
+        tests:
+          - not_null
+      - name: avg_days_delayed
+        description: "Mean delay across all shipments in a given month/region."
+
+  - name: mart_product_inventory_health
+    description: >
+      Monthly summary of product availability and inventory efficiency.
+      Used to prevent stockouts and identify overstocked capital.
+    columns:
+      - name: stockout_rate_pct
+        description: "Percentage of the month where quantity_available was zero."
+        tests:
+          - not_null
+      - name: inventory_efficiency_rating
+        description: "Classification of stock health (CRITICAL_UNRELIABLE, UNDER_STOCKED, OPTIMAL, OVER_STOCKED)."
+        tests:
+          - accepted_values:
+              values: ['CRITICAL_UNRELIABLE', 'UNDER_STOCKED', 'OPTIMAL', 'OVER_STOCKED']

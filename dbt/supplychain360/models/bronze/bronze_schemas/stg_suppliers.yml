@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: stg_suppliers
+    description: "Staging model for supplier data. Contains information about companies providing products."
+    columns:
+      - name: supplier_id
+        description: "Primary key. Unique identifier for the supplier."
+        tests:
+          - unique
+          - not_null
+      - name: supplier_name
+        description: "The legal name of the supplier."
+      - name: category
+        description: "The business category the supplier operates in (e.g., Electronics, Food)."
+      - name: country
+        description: "The country where the supplier's headquarters is located."
+      - name: ingested_at
+        description: "Timestamp indicating when dbt processed this record into the bronze layer."

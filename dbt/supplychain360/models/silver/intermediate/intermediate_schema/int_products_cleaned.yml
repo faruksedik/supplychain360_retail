@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: int_products_cleaned
+    description: "Standardized product catalog with trimmed names and USD pricing."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: "Trimmed product name for clean reporting."
+      - name: category
+        description: "Uppercased product category for consistent grouping."
+      - name: unit_price_usd
+        description: "Standardized unit price in Dollars."
+        tests:
+          - not_null

@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: stg_warehouses
+    description: "Staging model for warehouse locations."
+    columns:
+      - name: warehouse_id
+        description: "Primary key. Unique identifier for the warehouse."
+        tests:
+          - unique
+          - not_null
+      - name: city
+        description: "City where the warehouse is located."
+      - name: state
+        description: "State or province of the warehouse."
+      - name: ingested_at
+        description: "Timestamp of ingestion into dbt."

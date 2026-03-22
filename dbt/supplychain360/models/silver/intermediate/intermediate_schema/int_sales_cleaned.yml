@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: int_sales_cleaned
+    description: "Intermediate sales table: Deduplicated by transaction_id and cast to USD decimals."
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: unit_price_usd
+        description: "Unit price of the product in US Dollars."
+      - name: sale_amount_usd
+        description: "Total transaction value in US Dollars."

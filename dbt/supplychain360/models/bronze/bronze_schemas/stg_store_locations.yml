@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_store_locations
+    description: "Retail store locations and their metadata."
+    columns:
+      - name: store_id
+        description: "Primary key for store locations."
+        tests:
+          - unique
+          - not_null
+      - name: store_name
+        description: "The consumer-facing name of the store."
+      - name: city
+        description: "City location of the store."
+      - name: state
+        description: "State location of the store."
+      - name: region
+        description: "Geographic region (e.g., North, West, East)."
+      - name: store_open_date
+        description: "The date the store first opened for business."
+      - name: ingested_at
+        description: "Timestamp of ingestion."

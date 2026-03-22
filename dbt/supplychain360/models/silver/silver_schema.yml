@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: fact_sales_enriched
+    description: "Final enriched sales table combining sales, products, and store geography. Primary source for Regional Sales Demand analysis."
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: net_revenue_usd
+        description: "Sale amount after applying discount_pct."
+      - name: store_region
+        description: "The geographical region (NORTH, SOUTH, etc.) for demand tracking."
+        tests:
+          - not_null
+
+  - name: fact_supplier_performance
+    description: "Measures supplier logistics reliability by comparing expected vs actual delivery dates."
+    columns:
+      - name: shipment_id
+        tests:
+          - unique
+          - not_null
+      - name: delivery_status
+        description: "Categorization of delivery (LATE, ON_TIME, EARLY, IN_TRANSIT)."
+        tests:
+          - accepted_values:
+              values: ['LATE', 'ON_TIME', 'EARLY', 'IN_TRANSIT']
+      - name: delivery_delay_days
+        description: "Days late (Positive) or early (Negative)."
+
+  - name: fact_inventory_daily_status
+    description: "Daily snapshots of stock levels per warehouse. Used to analyze stockout trends and reorder efficiency."
+    columns:
+      - name: inventory_status_id
+        tests:
+          - unique
+          - not_null
+      - name: stock_status
+        description: "Status of inventory (OUT_OF_STOCK, LOW_STOCK, HEALTHY)."
+        tests:
+          - accepted_values:
+              values: ['OUT_OF_STOCK', 'LOW_STOCK', 'HEALTHY']
+      - name: stock_coverage_ratio
+        description: "Ratio of quantity available to reorder threshold. Values < 1 indicate stockout risk."
+
+  - name: dim_warehouses_enriched
+    description: >
+      A combined warehouse dimension table. It includes static location data 
+      and dynamic efficiency metrics aggregated from shipment history.
+    columns:
+      - name: warehouse_key
+        description: "Hashed surrogate key generated via custom macro."
+        tests:
+          - unique
+          - not_null
+
+      - name: warehouse_id
+        description: "Original natural key from the source system."
+        tests:
+          - not_null
+
+      - name: total_shipments_processed
+        description: "Count of all shipments originating from this warehouse."
+        tests:
+          - not_null
+
+      - name: avg_delay_days
+        description: >
+          The average number of days shipments from this warehouse were delayed. 
+          Used to identify logistics bottlenecks.
+        tests:
+          - not_null
+
+      - name: city_name
+        description: "Standardized city name (Initcap)."

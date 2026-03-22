@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: int_warehouses_cleaned
+    description: "Warehouse locations with title-cased city names."
+    columns:
+      - name: warehouse_id
+        tests:
+          - unique
+          - not_null
+      - name: city_name
+        description: "City name standardized via initcap()."
+      - name: state_code
+        description: "Two-letter state code in uppercase."
