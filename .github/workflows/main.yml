@@ -69,3 +69,28 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/supplychain360:v1
+  
+  # --- STAGE 3: EMAIL NOTIFICATION ---
+  send-notification:
+    needs: [snowflake-validation, docker-deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "SupplyChain360 Build Status: ${{ job.status }}"
+          to: ${{ secrets.MAIL_RECIPIENT }}
+          from: "GitHub Actions - Faruk's CI/CD"
+          body: |
+            The SupplyChain360 pipeline has finished.
+            
+            Status: ${{ job.status }}
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            
+            Check logs here: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

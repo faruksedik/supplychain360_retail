@@ -12,7 +12,7 @@ from supplychain.ingestion.snowflake.snowflake_load import create_snowflake_tabl
 
 default_args = {
     "owner": "Faruk",
-    # "retries": 3,
+    "retries": 3,
     "email": ["faruksedik@gmail.com"],
     "email_on_failure": True,
     "email_on_retry": False,
@@ -88,11 +88,14 @@ with DAG(
         bash_command="""cd /opt/airflow/dbt/supplychain360 && 
         dbt run --select gold --profiles-dir ."""
     )
+
     gold_test = BashOperator(
         task_id="gold_test",
         bash_command="""cd /opt/airflow/dbt/supplychain360 && 
         dbt test --select gold --profiles-dir ."""
     )
+        
+    
 
 
     

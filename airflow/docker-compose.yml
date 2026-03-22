@@ -26,15 +26,15 @@ x-airflow-common: &airflow-common
     PYTHONPATH: /opt/airflow:/opt/airflow/src
 
     # Airflow SMTP settings
-    AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
-    AIRFLOW__SMTP__SMTP_PORT: 465   
-    AIRFLOW__SMTP__SMTP_MAIL_FROM: ${SMTP_USER}
-    AIRFLOW__SMTP__SMTP_STARTTLS: "false"
-    AIRFLOW__SMTP__SMTP_SSL: "true"
+    AIRFLOW__SMTP__SMTP_HOST: 'smtp.gmail.com'
+    AIRFLOW__SMTP__SMTP_PORT: '465'   
+    AIRFLOW__SMTP__SMTP_MAIL_FROM: "${SMTP_USER}"
+    AIRFLOW__SMTP__SMTP_STARTTLS: 'false'
+    AIRFLOW__SMTP__SMTP_SSL: 'true'
 
     # Login credentials
-    AIRFLOW__SMTP__SMTP_USER: ${SMTP_USER}
-    AIRFLOW__SMTP__SMTP_PASSWORD: ${SMTP_PASSWORD}
+    AIRFLOW__SMTP__SMTP_USER: '${SMTP_USER}'
+    AIRFLOW__SMTP__SMTP_PASSWORD: '${SMTP_PASSWORD}'
 
   volumes:
     - ./dags:/opt/airflow/dags
