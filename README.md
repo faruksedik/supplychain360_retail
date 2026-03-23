@@ -130,7 +130,7 @@ docker pull faruksedik/supplychain360:latest
 
 Inside the `airflow/` folder:
 
-Create a .env file with the following
+Create a `.env` file with the following
 
 ```
 AIRFLOW_UID=50000
@@ -141,6 +141,7 @@ AWS_FOLDER=/c/Users/USER/.aws
 SMTP_USER=example@gmail.com
 SMTP_PASSWORD=
 
+```
 ```
 docker compose up airflow-init
 docker compose up -d
@@ -155,10 +156,10 @@ http://localhost:8080
 ```
 
 ---
+---
 
 # ⚠️ Environment Setup
 
----
 
 ### 🔑 dbt Profile (NOT in repo)
 
@@ -168,6 +169,7 @@ Create:
 ~/.dbt/profiles.yml
 ```
 
+---
 ---
 
 # 🏗 Infrastructure (Optional)
@@ -181,6 +183,7 @@ terraform plan
 terraform apply
 ```
 
+---
 ---
 
 # 🔄 CI/CD Pipeline
