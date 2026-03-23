@@ -70,7 +70,7 @@ This project delivers a Unified Supply Chain Data Platform that centralizes data
 
 ## ✨ Key Features
 
-- Incremental processing  
+- Incremental processing   
 - Idempotent pipelines  
 - Data quality checks  
 - Logging & monitoring  
