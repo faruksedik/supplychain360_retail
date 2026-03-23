@@ -1,61 +1,104 @@
-# 📦 SupplyChain360: Unified Data Lakehouse & Analytics Platform
+# 🚀 SupplyChain360 Data Platform
 
-## 📖 Business Scenario
+A production-grade, end-to-end data engineering platform designed to unify fragmented supply chain data and enable real-time analytics for operational efficiency.
 
-SupplyChain360 is a fast-growing retail distributor facing:
+---
 
-* Frequent stockouts
-* Overstocked inventory
-* Delivery delays
+## 📌 Project Overview
 
-These issues were caused by **fragmented data sources**:
+SupplyChain360, a retail distribution company in the United States, faced critical supply chain challenges:
 
-* AWS S3 (Logistics)
-* Google Sheets (Stores)
-* PostgreSQL (Sales)
+- Frequent stockouts of high-demand products
+- Overstocking of slow-moving inventory
+- Delayed shipments
+- Lack of visibility into:
+  - Supplier performance
+  - Warehouse efficiency
+  - Product demand trends
 
-### 🎯 Solution
-
-This project delivers a **production-grade unified data platform** that centralizes all data into a single analytics system, enabling:
-
-* Data-driven decisions
-* Supplier performance optimization
-* Reduced operational costs
+This project delivers a Unified Supply Chain Data Platform that centralizes data across multiple systems and enables reliable, scalable analytics.
 
 ---
 
 # 🏗 Architecture Overview
 
-Medallion Architecture:
+![architecture diagram](<architecture diagram.png>)
 
-Bronze → Silver → Gold
 
 ---
 
 # 🔧 Tech Stack
 
-| Layer            | Tool           |
-| ---------------- | -------------- |
-| Orchestration    | Apache Airflow |
-| Data Warehouse   | Snowflake      |
-| Transformation   | dbt Core       |
-| Infrastructure   | Terraform      |
-| Containerization | Docker         |
-| CI/CD            | GitHub Actions |
+| Category | Tools |
+|--------|------|
+| Cloud Platform | AWS |
+| Storage | S3 (Parquet) |
+| Data Warehouse | Snowflake |
+| Orchestration | Apache Airflow |
+| Transformation | dbt |
+| Programming | Python 3.11 |
+| IaC | Terraform |
+| Containerization | Docker |
+| CI/CD | GitHub Actions |
+
+---
+
+## 🔄 Data Pipeline Flow
+
+1. Data Extraction  
+   - S3 (CSV, JSON)  
+   - PostgreSQL  
+   - Google Sheets  
+
+2. Data Ingestion  
+   - Convert to Parquet  
+   - Store in S3  
+
+3. Data Loading  
+   - Load into Snowflake (Bronze)  
+
+4. Transformation (dbt)  
+   - Bronze → Silver → Gold  
+
+5. Data Quality  
+   - dbt tests  
+
+6. Analytics Layer  
+   - Ready for BI & reporting  
+
+---
+
+## ✨ Key Features
+
+- Incremental processing  
+- Idempotent pipelines  
+- Data quality checks  
+- Logging & monitoring  
+- Retry mechanisms  
+- API integrations  
 
 ---
 
 # 📁 Project Structure
 
 ```
-.
-├── airflow/                # DAGs and orchestration
-├── dbt/                    # Transformation models
-├── src/                    # Python ingestion logic
-├── terraform/              # Infrastructure as Code
-├── Dockerfile
-├── requirements.txt
-└── .dockerignore
+├── .github/                # CI/CD
+│   ├── workflows/
+|        └── main.yaml
+├── airflow/                # Orchestration logic
+│   ├── dags/               # Airflow DAGs (Ingestion, dbt, Quality)
+│   └── docker-compose.yaml # Local development environment
+├── dbt/supplychain360/     # Transformation Layer
+│   ├── models/             # Bronze (Raw), Silver (Clean), Gold
+│   ├── macros/             # DRY utility functions
+│   └── profiles.yml        # Warehouse connection config
+├── src/                    # Custom Python Library
+│   ├── extractors/         # S3, Postgres, and GSheets API logic
+│   └── utils/              # Logging and Metadata helpers
+├── terraform/              # IaC for S3, IAM, and Warehouse
+├── Dockerfile              # Multi-stage production build
+├── requirements.txt        # Python dependencies
+└── .dockerignore           # Build optimization
 ```
 
 ---
@@ -70,35 +113,6 @@ The platform enables:
 * 🌍 Regional demand → Track revenue trends
 
 ---
-
-# 🔄 Data Pipeline
-
-## 🟤 Bronze
-
-* Raw ingestion (S3, GSheets, PostgreSQL)
-* Stored as Parquet
-* Metadata added
-
-## ⚪ Silver
-
-* Cleaning & standardization
-* Deduplication
-
-## 🟡 Gold
-
-* Star schema:
-
-**Fact Tables**
-
-* fact_sales
-* fact_inventory_snapshots
-
-**Dimension Tables**
-
-* dim_products
-* dim_stores
-* dim_suppliers
-* dim_warehouses
 
 ---
 
@@ -116,6 +130,17 @@ docker pull faruksedik/supplychain360:latest
 
 Inside the `airflow/` folder:
 
+Create a .env file with the following
+
+```
+AIRFLOW_UID=50000
+_AIRFLOW_WWW_USER_USERNAME=airflow
+_AIRFLOW_WWW_USER_PASSWORD=airflow
+AWS_FOLDER=/c/Users/USER/.aws
+
+SMTP_USER=example@gmail.com
+SMTP_PASSWORD=
+
 ```
 docker compose up airflow-init
 docker compose up -d
@@ -123,7 +148,7 @@ docker compose up -d
 
 ---
 
-## 🌐 Access Airflow
+## 🌐 Access Airflow UI
 
 ```
 http://localhost:8080
@@ -182,6 +207,18 @@ Sensitive files are excluded:
 * `profiles.yml`
 * AWS credentials
 
+In the src/supplychain/utils folder create another .env file:
+```
+# Snowflake Credentials
+USER=
+PASSWORD=
+ACCOUNT=
+WAREHOUSE=
+DATABASE=
+SCHEMA=
+STAGE_NAME=
+```
+
 ---
 
 # 🛠 Engineering Highlights
@@ -199,7 +236,6 @@ Sensitive files are excluded:
 * AWS deployment (ECS/EKS)
 * Monitoring (Prometheus + Grafana)
 * Data observability
-* Real-time streaming (Kafka)
 
 ---
 

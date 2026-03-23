@@ -19,6 +19,12 @@ The project utilizes a multi-layered approach optimized for **Snowflake's** comp
     * **Enriched:** Denormalized Fact & Dimension tables utilizing **custom Jinja macros** for MD5 surrogate key generation.
 * **Gold (Marts):** High-level, pre-aggregated business views optimized for BI consumption.
 
+## 📊 Data Lineage & Flow
+The following Directed Acyclic Graph (DAG) illustrates the modular dependency structure of the pipeline. It highlights how raw sources flow through incremental silver transformations to produce the final analytical gold marts.
+
+![dbt Lineage Graph](dbt-dag.png)
+
+
 ## 🛠️ Technical Stack
 * **Cloud Data Warehouse:** Snowflake
 * **Orchestration:** dbt Core (v1.8+)
@@ -33,7 +39,7 @@ Data integrity is enforced at every layer through automated dbt tests:
 * **Defensive Coding:** Explicit type casting in Snowflake to ensure mathematical accuracy (e.g., handling numeric precision for `sale_amount_usd`).
 
 ## 🚦 How to Run
-1.  **Configure Profile:** Ensure your `profiles.yml` is set up for Snowflake authentication.
+1.  **Configure Profile:** Ensure your `profiles.yml` is set up for Snowflake authentication. See example_profil.yml
 2.  **Install Dependencies:**
     ```bash
     dbt deps
