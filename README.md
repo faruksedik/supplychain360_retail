@@ -121,7 +121,7 @@ The platform enables:
 ## ✅ 1. Pull Image from Docker Hub
 
 ```
-docker pull faruksedik/supplychain360:latest
+docker pull faruksedik/supplychain360:v1
 ```
 
 ---
