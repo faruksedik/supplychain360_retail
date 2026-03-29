@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: silver_warehouses
+    description: "Incremental warehouse dimension. Essential for mapping inventory to locations."
+    columns:
+      - name: warehouse_id
+        description: "Primary key for the warehouse facility."
+        tests:
+          - unique
+          - not_null
+
+      - name: city
+        description: "City for geographic grouping."
+
+      - name: bronze_ingested_at
+        description: "Watermark for incremental synchronization."

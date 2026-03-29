@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: silver_inventories
+    description: >
+      Cleaned snapshot data tracking stock levels across warehouses. 
+      Uses a surrogate key (warehouse + product + date) to identify unique records.
+    columns:
+      - name: inventory_pk
+        description: "MD5 hash surrogate key generated from warehouse_id, product_id, and snapshot_date."
+        tests:
+          - unique
+          - not_null
+
+      - name: warehouse_id
+        description: "Trimmed and uppercased warehouse identifier."
+
+      - name: product_id
+        description: "Trimmed and uppercased product identifier."
+
+      - name: quantity_available
+        description: "Current stock count at the time of snapshot."
+      
+      - name: reorder_threshold
+        description: "The minimum quantity before a restock is triggered."
+
+      - name: stock_status
+        description: "Derived status: OUT_OF_STOCK, LOW_STOCK, or HEALTHY."
+        tests:
+          - accepted_values:
+              values: ['OUT_OF_STOCK', 'LOW_STOCK', 'HEALTHY']
+
+      - name: snapshot_date
+        description: "The date the inventory level was recorded."

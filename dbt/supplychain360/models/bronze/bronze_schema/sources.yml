@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw source data for SupplyChain360 platform ingested into Snowflake without transformation."
+    database: supplychain360_db
+    schema: raw
+
+    tables:
+      - name: suppliers
+        description: "Contains information about suppliers providing products to the business."
+      
+      - name: warehouses
+        description: "List of warehouses where inventory is stored."
+      
+      - name: store_locations
+        description: "Information about retail store locations."
+      
+      - name: products
+        description: "Catalog of products sold across stores."
+      
+      - name: inventories
+        description: "Snapshot of inventory levels per product at each warehouse."
+      
+      - name: sales
+        description: "Transactional sales data capturing product purchases at stores."
+      
+      - name: shipments
+        description: "Records of product shipments from warehouses to stores."

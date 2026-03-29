@@ -164,7 +164,7 @@ TABLE_CREATION_SQL = {
             city            VARCHAR,
             state           VARCHAR,
             region          VARCHAR,
-            store_open_date TIMESTAMP_NTZ
+            store_open_date DATE
         );
     """,
     "products": """

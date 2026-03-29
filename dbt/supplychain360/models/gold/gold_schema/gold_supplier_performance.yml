@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: gold_supplier_performance
+    description: "Final mart for Supplier Delivery Performance. Tracks lateness and carrier reliability."
+    columns:
+      - name: shipment_id
+        description: "Unique identifier for the shipment."
+        tests:
+          - unique
+          - not_null
+
+      - name: delivery_status
+        description: "Standardized status: ON_TIME, LATE, IN_TRANSIT."
+        tests:
+          - accepted_values:
+              values: ['ON_TIME', 'LATE', 'IN_TRANSIT']
+
+      - name: is_late_flag
+        description: "Binary flag (1/0) for late deliveries to simplify BI aggregation."

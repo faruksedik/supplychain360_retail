@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: silver_shipments
+    description: >
+      Cleaned and deduplicated logistics data. 
+      Calculates delivery delays and statuses to support 'Supplier Delivery Performance' and 'Warehouse Efficiency' insights.
+    columns:
+      - name: shipment_id
+        description: "Primary key for the shipment, trimmed and uppercased."
+        tests:
+          - unique
+          - not_null
+
+      - name: warehouse_id
+        description: "Foreign key to the warehouse originating the shipment."
+
+      - name: store_id
+        description: "Foreign key to the destination store."
+
+      - name: product_id
+        description: "Foreign key for the item being shipped."
+
+      - name: quantity_shipped
+        description: "Number of units in the shipment."
+
+      - name: delivery_status
+        description: "Derived status: ON_TIME, LATE, or IN_TRANSIT."
+        tests:
+          - accepted_values:
+              values: ['ON_TIME', 'LATE', 'IN_TRANSIT']
+
+      - name: delivery_delay_days
+        description: "The difference between actual and expected delivery dates. Positive values indicate a delay."
+
+      - name: shipment_date
+        description: "The date the shipment left the warehouse."

@@ -64,9 +64,7 @@ with DAG(
         task_id="bronze_test",
         bash_command="""
             cd /opt/airflow/dbt/supplychain360 && \
-            dbt test --select bronze --profiles-dir . --warn-error || true
-        """,
-        do_xcom_push=False
+            dbt test --select bronze --profiles-dir ."""
     )
 
     # Silver layer

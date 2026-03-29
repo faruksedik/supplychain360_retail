@@ -51,9 +51,9 @@ target_tables = {
     "warehouses": "warehouses",
     "suppliers": "suppliers",
     "shipments": "shipments",
+    "store_locations": "store_locations",
     "inventories": "inventories",
-    "sales": "sales",
-    "store_locations": "store_locations"
+    "sales": "sales"
 }
 
 folders = {

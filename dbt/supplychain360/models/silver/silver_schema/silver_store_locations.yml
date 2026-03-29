@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: silver_store_locations
+    description: "Incremental store dimension. Maps retail outlets to regions for demand analysis."
+    columns:
+      - name: store_id
+        description: "Unique identifier for the retail outlet."
+        tests:
+          - unique
+          - not_null
+
+      - name: region
+        description: "Cleaned region (e.g., North, South) for high-level aggregation."
+
+      - name: bronze_ingested_at
+        description: "Timestamp used to identify new or updated store records."

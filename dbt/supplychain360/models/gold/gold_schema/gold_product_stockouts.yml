@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: gold_product_stockouts
+    description: "Final mart for Product Stockout Trends. Combines inventory levels with product value segments."
+    columns:
+      - name: inventory_pk
+        description: "Surrogate key from the silver inventory layer."
+        tests:
+          - unique
+          - not_null
+
+      - name: stock_status
+        description: "Current stock state: OUT_OF_STOCK, LOW_STOCK, HEALTHY."
+        tests:
+          - accepted_values:
+              values: ['OUT_OF_STOCK', 'LOW_STOCK', 'HEALTHY']
+
+      - name: replenishment_priority
+        description: "Derived priority based on stock level and product value (e.g., CRITICAL for high-value stockouts)."
+        tests:
+          - accepted_values:
+              values: ['CRITICAL', 'URGENT', 'WARNING', 'STABLE']

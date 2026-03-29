@@ -24,3 +24,5 @@ from supplychain.utils.snowflake_utils import connect_to_snowflake, copy_parquet
 # load_all_data_to_snowflake()
 
 # create_snowflake_tables()
+
+# ingest_store_locations_sheet()

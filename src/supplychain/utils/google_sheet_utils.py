@@ -1,5 +1,6 @@
 import io
 import os
+from pathlib import Path
 import gspread
 import pandas as pd
 
@@ -11,8 +12,6 @@ from google.oauth2.service_account import Credentials
 from supplychain.utils.s3_utils import create_s3_client
 
 logger = get_logger(__name__)
-
-
 
 def get_google_credentials(credentials_path: str) -> Credentials:
     """
@@ -33,19 +32,27 @@ def get_google_credentials(credentials_path: str) -> Credentials:
     FileNotFoundError
         If the credentials file does not exist.
     ValueError
-        If the credentials file is invalid.
+        
     """
 
+    # Resolve project root
+    project_root = Path(__file__).resolve().parents[3]
+
+    # Build absolute path
+    full_path = project_root / credentials_path
+
     try:
-        if not os.path.exists(credentials_path):
+        # Use full_path here (FIXED)
+        if not full_path.exists():
             raise FileNotFoundError(
-                f"Google credentials file not found: {credentials_path}"
+                f"Google credentials file not found: {full_path}"
             )
 
-        logger.info("Loading Google credentials from %s", credentials_path)
+        logger.info("Loading Google credentials from %s", full_path)
 
+        # Use full_path here too (FIXED)
         credentials = Credentials.from_service_account_file(
-            credentials_path,
+            str(full_path),
             scopes=config.GOOGLE_API_SCOPES,
         )
 
@@ -56,6 +63,7 @@ def get_google_credentials(credentials_path: str) -> Credentials:
     except Exception as exc:
         logger.error("Failed to load Google credentials: %s", exc)
         raise
+
 
 
 def ingest_google_sheet_to_s3(
@@ -122,7 +130,15 @@ def ingest_google_sheet_to_s3(
         if not records:
             raise ValueError(f"No data found in sheet '{sheet_name}'")
 
+        # Create DataFrame
         df = pd.DataFrame(records)
+
+        # Identify date columns and convert them to actual datetime objects
+        for col in df.columns:
+            if 'date' in col.lower():
+                logger.info("Normalizing date format for column: %s", col)
+                df[col] = pd.to_datetime(df[col], dayfirst=True, errors='coerce')
+                df[col] = df[col].dt.date
 
         # Convert to best possible dtypes (Pandas nullable types)
         df = df.convert_dtypes()
@@ -178,4 +194,3 @@ def ingest_google_sheet_to_s3(
     except Exception as exc:
         logger.error("Failed to ingest Google Sheet '%s': %s", sheet_name, exc)
         raise
-

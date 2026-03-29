@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: silver_products
+    description: "Incremental product dimension. Updates existing products or adds new ones based on product_id."
+    columns:
+      - name: product_id
+        description: "Primary key. Trimmed and uppercased."
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_id
+        description: "Foreign key to silver_suppliers."
+
+      - name: price_segment
+        description: "Value category: HIGH_VALUE, MEDIUM_VALUE, STANDARD_VALUE."
+        tests:
+          - accepted_values:
+              values: ['HIGH_VALUE', 'MEDIUM_VALUE', 'STANDARD_VALUE']
+
+      - name: bronze_ingested_at
+        description: "Watermark timestamp used for incremental loading logic."

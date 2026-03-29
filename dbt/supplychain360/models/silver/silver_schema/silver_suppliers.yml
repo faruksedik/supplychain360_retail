@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: silver_suppliers
+    description: "Incremental supplier dimension. Tracks vendor details for performance analysis."
+    columns:
+      - name: supplier_id
+        description: "Unique identifier for the supplier."
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_name
+        description: "Cleaned legal name of the vendor."
+
+      - name: bronze_ingested_at
+        description: "Internal timestamp used to filter new records from Bronze."

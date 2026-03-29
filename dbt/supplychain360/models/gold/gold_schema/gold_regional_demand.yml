@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: gold_regional_demand
+    description: "Final mart for Regional Sales Demand. Aggregates revenue and quantity by geography and time."
+    columns:
+      - name: region
+        description: "Uppercased region name (e.g., NORTH, SOUTH)."
+        tests:
+          - not_null
+
+      - name: transaction_date
+        description: "The date of the sales transactions."
+      
+      - name: total_net_revenue
+        description: "The sum of net_sale_amount for this grain. Key metric for demand analysis."

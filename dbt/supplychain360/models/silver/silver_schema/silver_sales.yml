@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: silver_sales
+    description: "Cleaned and deduplicated sales transactions. IDs are trimmed and uppercased for consistency."
+    columns:
+      - name: transaction_id
+        description: "Cleaned unique identifier for the transaction."
+        tests:
+          - unique
+          - not_null
+
+      - name: store_id
+        description: "Trimmed and uppercased store identifier."
+
+      - name: product_id
+        description: "Trimmed and uppercased product identifier."
+
+      - name: quantity_sold
+        description: "Number of units sold. Cast to INTEGER."
+
+      - name: net_sale_amount
+        description: "Total revenue after discount: (sale_amount) * (1 - discount_pct)."
+
+      - name: transaction_at
+        description: "Standardized TIMESTAMP of the transaction."
+
+      - name: transaction_date
+        description: "Extracted DATE for optimized regional demand analysis."

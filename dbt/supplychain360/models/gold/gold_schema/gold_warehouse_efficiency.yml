@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: gold_warehouse_efficiency
+    description: "Final mart for Warehouse Efficiency. Aggregates stock volume and variety by location."
+    columns:
+      - name: warehouse_id
+        description: "Unique identifier for the warehouse."
+        tests:
+          - not_null
+
+      - name: snapshot_date
+        description: "The date of the inventory snapshot."
+
+      - name: unique_products_stored
+        description: "Count of distinct product IDs held in this warehouse on this date."
