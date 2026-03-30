@@ -7,6 +7,10 @@
 
 WITH bronze_products AS (
     SELECT * FROM {{ ref('bronze_products') }}
+
+    {% if is_incremental() %}
+    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
+    {% endif %}
 ),
 
 deduplicated AS (
@@ -17,11 +21,6 @@ deduplicated AS (
             ORDER BY ingestion_timestamp DESC
         ) AS row_num
     FROM bronze_products
-    
-    {% if is_incremental() %}
-    -- Only pull records ingested since the last run
-    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
-    {% endif %}
 ),
 
 transformed AS (

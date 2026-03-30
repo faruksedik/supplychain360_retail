@@ -8,6 +8,9 @@
 
 WITH bronze_sales AS (
     SELECT * FROM {{ ref('bronze_sales') }}
+    {% if is_incremental() %}
+    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
+    {% endif %}
 ),
 
 deduplicated AS (
@@ -18,11 +21,6 @@ deduplicated AS (
             ORDER BY ingestion_timestamp DESC
         ) AS row_num
     FROM bronze_sales
-    
-    {% if is_incremental() %}
-    -- Handles incremental logic for both PG and Snowflake
-    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
-    {% endif %}
 ),
 
 transformed AS (
