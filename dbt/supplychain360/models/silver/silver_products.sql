@@ -14,13 +14,13 @@ deduplicated AS (
         *,
         ROW_NUMBER() OVER (
             PARTITION BY product_id 
-            ORDER BY _ingested_at DESC
+            ORDER BY ingestion_timestamp DESC
         ) AS row_num
     FROM bronze_products
     
     {% if is_incremental() %}
     -- Only pull records ingested since the last run
-    WHERE _ingested_at > (SELECT MAX(bronze_ingested_at) FROM {{ this }})
+    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
     {% endif %}
 ),
 
@@ -41,6 +41,7 @@ transformed AS (
             ELSE 'STANDARD_VALUE'
         END AS price_segment,
 
+        ingestion_timestamp,
         _ingested_at AS bronze_ingested_at,
         CURRENT_TIMESTAMP AS _transformed_at
     FROM deduplicated

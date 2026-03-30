@@ -14,12 +14,12 @@ deduplicated AS (
         *,
         ROW_NUMBER() OVER (
             PARTITION BY warehouse_id 
-            ORDER BY _ingested_at DESC
+            ORDER BY ingestion_timestamp DESC
         ) AS row_num
     FROM bronze_warehouses
 
     {% if is_incremental() %}
-    WHERE _ingested_at > (SELECT MAX(bronze_ingested_at) FROM {{ this }})
+    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
     {% endif %}
 ),
 
@@ -30,6 +30,7 @@ transformed AS (
         TRIM(city) AS city,
         TRIM(state) AS state,
 
+        ingestion_timestamp,
         _ingested_at AS bronze_ingested_at,
         CURRENT_TIMESTAMP AS _transformed_at
     FROM deduplicated

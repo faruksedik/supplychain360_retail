@@ -15,12 +15,12 @@ deduplicated AS (
         *,
         ROW_NUMBER() OVER (
             PARTITION BY warehouse_id, product_id, snapshot_date 
-            ORDER BY _ingested_at DESC
+            ORDER BY ingestion_timestamp DESC
         ) AS row_num
     FROM bronze_inventories
     
     {% if is_incremental() %}
-    WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM {{ this }})
+    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
     {% endif %}
 ),
 
@@ -45,6 +45,7 @@ transformed AS (
             ELSE 'HEALTHY'
         END AS stock_status,
 
+        ingestion_timestamp,
         -- 5. Audit Metadata
         _ingested_at AS bronze_ingested_at,
         CURRENT_TIMESTAMP AS _transformed_at

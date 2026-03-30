@@ -9,6 +9,7 @@ renamed as (
         supplier_name,
         category,
         country,
+        ingestion_timestamp,
         -- Standard metadata
         current_timestamp as _ingested_at,
         'raw.suppliers' as _source_file_path

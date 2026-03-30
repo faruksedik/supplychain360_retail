@@ -7,6 +7,85 @@ from supplychain.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+# Table creation SQLs
+TABLE_CREATION_SQL = {
+    "suppliers": """
+        CREATE TABLE IF NOT EXISTS suppliers (
+            supplier_id         VARCHAR PRIMARY KEY,
+            supplier_name       VARCHAR,
+            category            VARCHAR,
+            country             VARCHAR,
+            ingestion_timestamp TIMESTAMP_TZ
+        );
+    """,
+    "warehouses": """
+        CREATE TABLE IF NOT EXISTS warehouses (
+            warehouse_id        VARCHAR PRIMARY KEY,
+            city                VARCHAR,
+            state               VARCHAR,
+            ingestion_timestamp TIMESTAMP_TZ
+        );
+    """,
+    "store_locations": """
+        CREATE TABLE IF NOT EXISTS store_locations (
+            store_id            VARCHAR PRIMARY KEY,
+            store_name          VARCHAR,
+            city                VARCHAR,
+            state               VARCHAR,
+            region              VARCHAR,
+            store_open_date     DATE,
+            ingestion_timestamp TIMESTAMP_TZ
+        );
+    """,
+    "products": """
+        CREATE TABLE IF NOT EXISTS products (
+            product_id          VARCHAR PRIMARY KEY,
+            product_name        VARCHAR,
+            category            VARCHAR,
+            brand               VARCHAR,
+            supplier_id         VARCHAR,
+            unit_price          NUMBER(12, 2),
+            ingestion_timestamp TIMESTAMP_TZ
+        );
+    """,
+    "inventories": """
+        CREATE TABLE IF NOT EXISTS inventories (
+            warehouse_id        VARCHAR,
+            product_id          VARCHAR,
+            quantity_available  INTEGER,
+            reorder_threshold   INTEGER,
+            snapshot_date       DATE,
+            ingestion_timestamp TIMESTAMP_TZ
+        );
+    """,
+    "sales": """
+        CREATE TABLE IF NOT EXISTS sales (
+            transaction_id        VARCHAR PRIMARY KEY,
+            store_id              VARCHAR,
+            product_id            VARCHAR,
+            quantity_sold         INTEGER,
+            unit_price            NUMBER(12, 2),
+            discount_pct          NUMBER(5, 2),
+            sale_amount           NUMBER(15, 2),
+            transaction_timestamp TIMESTAMP_NTZ,
+            ingestion_timestamp   TIMESTAMP_TZ
+        );
+    """,
+    "shipments": """
+        CREATE TABLE IF NOT EXISTS shipments (
+            shipment_id            VARCHAR PRIMARY KEY,
+            warehouse_id           VARCHAR,
+            store_id               VARCHAR,
+            product_id             VARCHAR,
+            quantity_shipped       INTEGER,
+            shipment_date          DATE,
+            expected_delivery_date DATE,
+            actual_delivery_date   DATE,
+            carrier                VARCHAR,
+            ingestion_timestamp    TIMESTAMP_TZ
+        );
+    """
+}
 
 def connect_to_snowflake(
     user: str,
@@ -139,79 +218,6 @@ def copy_parquet_folder(
         logger.info("Snowflake cursor closed after COPY")
 
 
-
-# Table creation SQLs
-TABLE_CREATION_SQL = {
-    "suppliers": """
-        CREATE OR REPLACE TABLE suppliers (
-            supplier_id   VARCHAR PRIMARY KEY,
-            supplier_name VARCHAR,
-            category      VARCHAR,
-            country       VARCHAR
-        );
-    """,
-    "warehouses": """
-        CREATE OR REPLACE TABLE warehouses (
-            warehouse_id VARCHAR PRIMARY KEY,
-            city         VARCHAR,
-            state        VARCHAR
-        );
-    """,
-    "store_locations": """
-        CREATE OR REPLACE TABLE store_locations (
-            store_id        VARCHAR PRIMARY KEY,
-            store_name      VARCHAR,
-            city            VARCHAR,
-            state           VARCHAR,
-            region          VARCHAR,
-            store_open_date DATE
-        );
-    """,
-    "products": """
-        CREATE OR REPLACE TABLE products (
-            product_id   VARCHAR PRIMARY KEY,
-            product_name VARCHAR,
-            category     VARCHAR,
-            brand        VARCHAR,
-            supplier_id  VARCHAR,
-            unit_price   NUMERIC(12, 2)
-        );
-    """,
-    "inventories": """
-        CREATE OR REPLACE TABLE inventories (
-            warehouse_id       VARCHAR,
-            product_id         VARCHAR,
-            quantity_available INTEGER,
-            reorder_threshold  INTEGER,
-            snapshot_date      DATE
-        );
-    """,
-    "sales": """
-        CREATE OR REPLACE TABLE sales (
-            transaction_id        VARCHAR PRIMARY KEY,
-            store_id              VARCHAR,
-            product_id            VARCHAR,
-            quantity_sold         INTEGER,
-            unit_price            NUMERIC(12, 2),
-            discount_pct          NUMERIC(5, 2),
-            sale_amount           NUMERIC(15, 2),
-            transaction_timestamp TIMESTAMP_NTZ
-        );
-    """,
-    "shipments": """
-        CREATE OR REPLACE TABLE shipments (
-            shipment_id            VARCHAR PRIMARY KEY,
-            warehouse_id           VARCHAR,
-            store_id               VARCHAR,
-            product_id             VARCHAR,
-            quantity_shipped       INTEGER,
-            shipment_date          DATE,
-            expected_delivery_date DATE,
-            actual_delivery_date   DATE,
-            carrier                VARCHAR
-        );
-    """
-}
 
 def create_tables_in_snowflake(
     user: str,

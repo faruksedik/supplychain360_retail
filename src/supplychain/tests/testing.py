@@ -26,3 +26,6 @@ from supplychain.utils.snowflake_utils import connect_to_snowflake, copy_parquet
 # create_snowflake_tables()
 
 # ingest_store_locations_sheet()
+
+
+# ingest_postgres_sales_data()

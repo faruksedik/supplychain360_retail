@@ -15,12 +15,12 @@ deduplicated AS (
         *,
         ROW_NUMBER() OVER (
             PARTITION BY shipment_id 
-            ORDER BY _ingested_at DESC
+            ORDER BY ingestion_timestamp DESC
         ) AS row_num
     FROM bronze_shipments
     
     {% if is_incremental() %}
-    WHERE shipment_date > (SELECT MAX(shipment_date) FROM {{ this }})
+    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
     {% endif %}
 ),
 
@@ -53,6 +53,7 @@ transformed AS (
             ELSE 'LATE'
         END AS delivery_status,
 
+        ingestion_timestamp,
         -- 5. Audit Metadata
         _ingested_at AS bronze_ingested_at,
         CURRENT_TIMESTAMP AS _transformed_at

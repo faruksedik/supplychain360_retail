@@ -1,8 +1,3 @@
-{{
-    config(
-        materialized='table'
-    )
-}}
 
 WITH sales AS (
     SELECT * FROM {{ ref('silver_sales') }}

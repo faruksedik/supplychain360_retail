@@ -15,12 +15,13 @@ deduplicated AS (
         *,
         ROW_NUMBER() OVER (
             PARTITION BY transaction_id 
-            ORDER BY _ingested_at DESC
+            ORDER BY ingestion_timestamp DESC
         ) AS row_num
     FROM bronze_sales
     
     {% if is_incremental() %}
-    WHERE transaction_timestamp > (SELECT MAX(transaction_at) FROM {{ this }})
+    -- Handles incremental logic for both PG and Snowflake
+    WHERE ingestion_timestamp > (SELECT MAX(ingestion_timestamp) FROM {{ this }})
     {% endif %}
 ),
 
@@ -51,6 +52,7 @@ transformed AS (
         CAST(transaction_timestamp AS TIMESTAMP) AS transaction_at,
         CAST(transaction_timestamp AS DATE) AS transaction_date,
 
+        ingestion_timestamp,
         -- 5. Audit Metadata
         _ingested_at AS bronze_ingested_at,
         CURRENT_TIMESTAMP AS _transformed_at

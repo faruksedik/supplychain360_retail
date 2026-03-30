@@ -188,17 +188,23 @@ terraform apply
 
 # 🔄 CI/CD Pipeline
 
-GitHub Actions automates:
+This project utilizes **GitHub Actions** to automate the full lifecycle of the data platform, from SQL validation to container deployment.
 
-### ✅ CI
+### 🧪 Stage 1: Snowflake & dbt Validation (CI)
+* **Environment Setup:** dynamic creation of `profiles.yml` using GitHub Secrets for secure Snowflake connectivity.
+* **Dependency Management:** Automated installation of `dbt-snowflake` and project dependencies via `dbt deps`.
+* **Pre-Deployment Check:** Executes `dbt debug` and `dbt compile` to ensure all models, macros, and connection strings are syntactically correct before merging.
 
-* flake8 (linting)
-* pytest (testing)
+### 🐳 Stage 2: Docker Build & Push (CD)
+* **Condition:** This stage only triggers if the Snowflake validation passes successfully.
+* **Containerization:** Packages the application logic into a Docker image using the `v1` tag.
+* **Registry Deployment:** Authenticates with **Docker Hub** and pushes the image to the central repository for deployment readiness.
 
-### 🚀 CD
+### 📧 Stage 3: Automated Monitoring
+* **Status Reporting:** A dedicated notification job that runs `if: always()`, ensuring the team is alerted regardless of success or failure.
+* **SMTP Integration:** Sends a detailed email report including the commit SHA, repository link, and direct access to the GitHub Actions log for rapid debugging.
 
-* Build Docker image
-* Push to Docker Hub
+---
 
 ---
 

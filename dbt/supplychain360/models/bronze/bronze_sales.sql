@@ -12,6 +12,7 @@ renamed as (
         discount_pct,
         sale_amount,
         transaction_timestamp,
+        ingestion_timestamp,
         current_timestamp as _ingested_at,
         'raw.sales' as _source_file_path
     FROM source

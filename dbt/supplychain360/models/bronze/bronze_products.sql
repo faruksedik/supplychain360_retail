@@ -10,6 +10,7 @@ renamed as (
         brand,
         supplier_id,
         unit_price,
+        ingestion_timestamp,
         current_timestamp as _ingested_at,
         'raw.products' as _source_file_path
     FROM source

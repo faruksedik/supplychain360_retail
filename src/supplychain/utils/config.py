@@ -9,6 +9,7 @@ SOURCE_ACCOUNT_PROFILE_REGION = "eu-west-2"
 SOURCE_S3_BUCKET_NAME = "supplychain360-data"
 DESTINATION_ACCOUNT_PROFILE_NAME = "destination-account"
 DESTINATION_S3_BUCKET_NAME = "faruk-supplychain360-bucket"
+# DESTINATION_S3_BUCKET_NAME = "faruk-data-lake-bucket"
 
 SOURCE_BUCKET_FOLDERS = {
     "products": "raw/products",

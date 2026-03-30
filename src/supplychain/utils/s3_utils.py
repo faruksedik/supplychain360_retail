@@ -2,6 +2,8 @@
 import boto3
 import pandas as pd
 import io
+
+from datetime import datetime, timezone
 from typing import List
 from supplychain.utils import config
 from botocore.exceptions import BotoCoreError
@@ -153,6 +155,9 @@ def ingest_to_s3(
             else:
                 logger.warning("Unsupported file type: %s", file_name)
                 continue
+
+            # Add ingestion timestamp
+            df['ingestion_timestamp'] = datetime.now(timezone.utc)
 
             # Convert DataFrame to Parquet in memory
             parquet_buffer = io.BytesIO()

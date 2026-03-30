@@ -1,9 +1,10 @@
+import datetime
 import io
-import os
 from pathlib import Path
 import gspread
 import pandas as pd
 
+from datetime import datetime, timezone
 from supplychain.utils import config
 from supplychain.utils.logger import get_logger
 from google.oauth2.service_account import Credentials
@@ -42,7 +43,6 @@ def get_google_credentials(credentials_path: str) -> Credentials:
     full_path = project_root / credentials_path
 
     try:
-        # Use full_path here (FIXED)
         if not full_path.exists():
             raise FileNotFoundError(
                 f"Google credentials file not found: {full_path}"
@@ -50,7 +50,7 @@ def get_google_credentials(credentials_path: str) -> Credentials:
 
         logger.info("Loading Google credentials from %s", full_path)
 
-        # Use full_path here too (FIXED)
+        
         credentials = Credentials.from_service_account_file(
             str(full_path),
             scopes=config.GOOGLE_API_SCOPES,
@@ -133,9 +133,12 @@ def ingest_google_sheet_to_s3(
         # Create DataFrame
         df = pd.DataFrame(records)
 
+        # Add Ingestion Timestamp
+        df['ingestion_timestamp'] = datetime.now(timezone.utc)
+
         # Identify date columns and convert them to actual datetime objects
         for col in df.columns:
-            if 'date' in col.lower():
+            if 'date' in col.lower() and col != 'ingestion_timestamp':
                 logger.info("Normalizing date format for column: %s", col)
                 df[col] = pd.to_datetime(df[col], dayfirst=True, errors='coerce')
                 df[col] = df[col].dt.date

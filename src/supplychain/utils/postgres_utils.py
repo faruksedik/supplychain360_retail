@@ -2,6 +2,8 @@ import io
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 import pandas as pd
+
+from datetime import datetime, timezone
 from typing import Dict, List
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
@@ -127,7 +129,6 @@ def get_postgres_credentials(ssm_client) -> dict:
 
         credentials = {}
         for key, param_path in POSTGRES_CREDENTIALS.items():
-            # All parameters are stored as plain String in SSM
             credentials[key] = get_ssm_parameter(ssm_client, param_path)
 
         logger.info("PostgreSQL credentials fetched successfully")
@@ -206,7 +207,6 @@ def get_sales_tables_from_db(engine: Engine, schema: str = "public") -> List[str
         Exception: If the information schema query fails.
     """
     try:
-        # Use a parameterized query for safety and wrap it in text()
         query = text("""
             SELECT table_name 
             FROM information_schema.tables
@@ -217,7 +217,6 @@ def get_sales_tables_from_db(engine: Engine, schema: str = "public") -> List[str
         
         logger.info("Scanning schema '%s' for tables matching 'sales_%%'", schema)
         
-        # Pass the parameters as a dictionary to pd.read_sql
         df = pd.read_sql(query, engine, params={"schema": schema})
         table_list = df["table_name"].tolist()
         
@@ -259,7 +258,7 @@ def get_ingested_tables_from_s3(
         paginator = s3_client.get_paginator("list_objects_v2")
         ingested_tables = []
 
-        # Paginate through S3 objects to handle more than 1,000 files
+        # Paginate through S3 objects
         for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
             contents = page.get("Contents", [])
             
@@ -310,9 +309,13 @@ def fetch_table_as_dataframe(engine: Engine, table_name: str, schema: str = "pub
         query = text(f'SELECT * FROM "{schema}"."{table_name}"')
         logger.info("Fetching all records from '%s.%s'", schema, table_name)
         
+        
         df = pd.read_sql(query, engine)
 
         df = df.astype(str) 
+
+        # Add the ingestion timestamp (UTC)
+        df['ingestion_timestamp'] = datetime.now(timezone.utc)
 
         logger.info("Successfully fetched %d rows from '%s.%s'", len(df), schema, table_name)
         return df
@@ -323,6 +326,7 @@ def fetch_table_as_dataframe(engine: Engine, table_name: str, schema: str = "pub
             schema, table_name, str(e)
         )
         raise
+
 
 
 
@@ -390,7 +394,7 @@ def orchestrate_sales_ingestion(
         ingested_table_names = get_ingested_tables_from_s3(s3, destination_s3_bucket, destination_s3_prefix)
 
         # 4. Filter for New Tables
-        # We compare the raw table name from DB against the cleaned list from S3
+        # Compare the raw table name from DB against the cleaned list from S3
         new_tables = [t for t in db_tables if t not in ingested_table_names]
 
         if not new_tables:
