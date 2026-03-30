@@ -85,20 +85,21 @@ This project delivers a Unified Supply Chain Data Platform that centralizes data
 ├── .github/                # CI/CD
 │   ├── workflows/
 |        └── main.yaml
-├── airflow/                # Orchestration logic
-│   ├── dags/               # Airflow DAGs (Ingestion, dbt, Quality)
-│   └── docker-compose.yaml # Local development environment
-├── dbt/supplychain360/     # Transformation Layer
-│   ├── models/             # Bronze (Raw), Silver (Clean), Gold
-│   ├── macros/             # DRY utility functions
-│   └── profiles.yml        # Warehouse connection config
-├── src/                    # Custom Python Library
-│   ├── extractors/         # S3, Postgres, and GSheets API logic
-│   └── utils/              # Logging and Metadata helpers
-├── terraform/              # IaC for S3, IAM, and Warehouse
-├── Dockerfile              # Multi-stage production build
-├── requirements.txt        # Python dependencies
-└── .dockerignore           # Build optimization
+├── airflow/                     # Orchestration logic
+│   ├── dags/                    # Airflow DAGs (Ingestion, dbt, Quality)
+│   └── docker-compose.yaml      # Local development environment
+    └── docker-compose.prod.yaml # For running container in another pc
+├── dbt/supplychain360/          # Transformation Layer
+│   ├── models/                  # Bronze (Raw), Silver (Clean), Gold
+│   ├── macros/                  # DRY utility functions
+│   └── profiles.yml             # Warehouse connection config
+├── src/                         # Custom Python Library
+│   ├── extractors/              # S3, Postgres, and GSheets API logic
+│   └── utils/                   # Logging and Metadata helpers
+├── terraform/                   # IaC for S3, IAM, and Warehouse
+├── Dockerfile                   # Multi-stage production build
+├── requirements.txt             # Python dependencies
+└── .dockerignore                # Build optimization
 ```
 
 ---
@@ -118,56 +119,84 @@ The platform enables:
 
 # 🐳 Running the Project (Docker Hub)
 
-## ✅ 1. Pull Image from Docker Hub
+This guide explains how to run the pipeline on a new machine using the pre-built Docker image. In this mode, the DAGs, dbt models, and Python source code are already **"baked"** into the container for maximum reliability and consistent environments.
 
+### 1. Prerequisites
+* **Docker Desktop** installed and running.
+* **Git** installed.
+* A **Snowflake** account and **AWS** credentials.
+
+### 2. Clone the Repository
+Open your terminal and clone the project structure to your local machine:
+```bash
+git clone https://github.com/faruksedik/supplychain360_retail.git
+cd supplychain360/airflow
 ```
-docker pull faruksedik/supplychain360:v1
-```
+## 3. Configure Secrets (Manual Setup)
 
----
+Since security credentials are excluded from version control, you must
+create these two files manually in the cloned directory:
 
-## ✅ 2. Run with Docker Compose
+### A. Create the `.env` file
 
-Inside the `airflow/` folder:
+Create a file named `.env` inside the `airflow/` folder:
 
-Create a `.env` file with the following
-
-```
-AIRFLOW_UID=50000
+``` bash
+# Airflow UI Credentials
 _AIRFLOW_WWW_USER_USERNAME=airflow
 _AIRFLOW_WWW_USER_PASSWORD=airflow
-AWS_FOLDER=/c/Users/USER/.aws
+AIRFLOW_UID=50000
 
-SMTP_USER=example@gmail.com
-SMTP_PASSWORD=
+# Path to your AWS credentials folder on your PC
+# Example: /home/user/.aws or C:/Users/Name/.aws
+AWS_FOLDER=/path/to/your/.aws
 
-```
-```
-docker compose up airflow-init
-docker compose up -d
-```
-
----
-
-## 🌐 Access Airflow UI
-
-```
-http://localhost:8080
+# SMTP Settings for Email Alerts
+SMTP_USER=your_email@gmail.com
+SMTP_PASSWORD=your_gmail_app_password
 ```
 
----
----
+### B. Create the `profiles.yml` file
 
-# ⚠️ Environment Setup
+Navigate to `dbt/supplychain360/` and create your Snowflake
+profile:
 
-
-### 🔑 dbt Profile (NOT in repo)
-
-Create:
-
+``` yaml
+# profiles.yml
+supplychain360:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: your_account_id
+      user: your_username
+      password: your_snowflake_password
+      role: accountadmin
+      warehouse: compute_wh
+      database: supplychain_db
+      schema: gold
+      threads: 1
 ```
-~/.dbt/profiles.yml
+
+## 4. Pull and Launch
+
+Run the following commands from the `airflow/` directory to download the
+image and start the services:
+
+``` bash
+# Pull the image from Docker Hub
+docker compose -f docker-compose.prod.yml pull
+
+# Start the pipeline in the background
+docker compose -f docker-compose.prod.yml up -d
 ```
+
+## 5. Verify the Deployment
+
+Once the containers are running, verify that the "baked" code is present
+and the scheduler is active:
+
+-   Access the UI: Go to http://localhost:8080
 
 ---
 ---
